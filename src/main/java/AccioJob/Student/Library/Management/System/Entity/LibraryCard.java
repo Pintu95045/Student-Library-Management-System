@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -25,7 +26,7 @@ public class LibraryCard {
     @Enumerated(value = EnumType.STRING)
     private CardStatus cardStatus;
     private int noOfBooksIssued;
-    private Date Validity;
+    private LocalDate Validity;
 
     @JoinColumn // its for an new colum is joining
     @OneToOne // mapping type

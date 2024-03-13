@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookService {
@@ -27,19 +28,31 @@ public class BookService {
         bookRepository.save(book);
         return "Book has been saved to the DB";
     }
-    public String associateBookAndAuthor(Integer bookId, Integer authorId){
-        Book book=bookRepository.findById(bookId).get();
-        Author author=authorRespository.findById(authorId).get();
+    public String associateBookAndAuthor(Integer bookId,Integer authorId) throws Exception{
 
-        //Associate book and author
+        //Get the book from the bookId
+        Optional<Book> bookOptional = bookRepository.findById(bookId);
+
+        if(bookOptional.isEmpty()) {
+            throw new Exception("BookId Entered is incorrect");
+            //Throw an exception that book is not found
+        }
+        Book book = bookOptional.get();
+
+        Optional<Author> optionalAuthor = authorRespository.findById(authorId);
+        if(optionalAuthor.isEmpty()) {
+            //thow an exception saying AuthorId entered is incorrect
+            throw new Exception("AuthorId entered is incorrect");
+        }
+        Author author = optionalAuthor.get();
+
+        //associate book and author Entity
         book.setAuthor(author);
         author.setNoOfBooks(author.getNoOfBooks()+1);
 
         bookRepository.save(book);
         authorRespository.save(author);
-
-        return "Book and Author has been associated";
-
+        return "Book and Author have been associated";
     }
 
     public List<Book> findBooksByAuthor(Integer authorId) {

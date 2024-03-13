@@ -25,6 +25,8 @@ public class Book {
 
     private Integer price;
 
+    private boolean isIssued;
+
     @JoinColumn
     @ManyToOne
     private Author author;
