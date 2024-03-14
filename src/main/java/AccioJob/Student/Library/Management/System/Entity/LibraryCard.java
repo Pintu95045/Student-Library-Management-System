@@ -9,15 +9,14 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Date;
-
 @Entity
 @Table(name = "card_info")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class LibraryCard {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,11 +24,12 @@ public class LibraryCard {
 
     @Enumerated(value = EnumType.STRING)
     private CardStatus cardStatus;
+
     private int noOfBooksIssued;
-    private LocalDate Validity;
 
-    @JoinColumn // its for an new colum is joining
-    @OneToOne // mapping type
-    private Student student;  //entity name which want to join
+    private Date validity;
 
+    @JoinColumn //This tells that a new column is adding the the LB
+    @OneToOne
+    private Student student;
 }

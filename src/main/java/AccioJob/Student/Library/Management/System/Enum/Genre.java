@@ -9,7 +9,7 @@ public enum Genre {
     ROMANTIC,
     MOTIVATIONAL,
     COMIC,
-    SPIRITUNAL,
-    THRILLIER
+    SPIRITUAL,
+    THRILLER
 
 }

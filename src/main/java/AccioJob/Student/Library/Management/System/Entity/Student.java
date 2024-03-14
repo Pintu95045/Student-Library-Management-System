@@ -5,15 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-@Entity // to define the schema
-@Table (name = "student_info") // to define the table
-
+@Entity //This is the schema of how Student Table will look like
+@Table(name = "student_info")
 @Getter
 @Setter
-@NoArgsConstructor // this is a default Constructor
-@AllArgsConstructor // create constructor of all argument
-
+@NoArgsConstructor //This is like a default constructor
+@AllArgsConstructor //This is like a constructor having all the arguments
 public class Student {
 
     @Id
@@ -30,5 +27,4 @@ public class Student {
 
     @Column(unique = true)
     private String emailId;
-
 }

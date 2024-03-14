@@ -15,6 +15,7 @@ import java.util.Date;
 @Setter
 public class Transaction {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String transactionId;
@@ -22,8 +23,7 @@ public class Transaction {
     @Enumerated(value = EnumType.STRING)
     private TransactionStatus transactionStatus;
 
-   // @CreationTimestamp
-    @CreatedDate
+    @CreationTimestamp
     private Date issueDate;
 
     private Date returnDate;

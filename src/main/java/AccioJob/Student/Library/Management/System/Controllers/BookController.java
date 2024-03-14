@@ -10,32 +10,33 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/book")
-
+@RequestMapping("book")
 public class BookController {
 
     @Autowired
     private BookService bookService;
 
+    @PostMapping("add")
+    public ResponseEntity addBook(@RequestBody Book book) {
 
-    @PostMapping("/add")
-    public ResponseEntity addBook(@RequestBody Book book){
         try {
-            String result=bookService.addBook(book);
+            String result = bookService.addBook(book);
             return new ResponseEntity(result, HttpStatus.OK);
-        }catch (Exception e){
+        }catch (Exception e) {
             return new ResponseEntity(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/associateBookAndAuthor")
-    public String associateBookAndAuthor(@RequestParam("bookId")Integer bookId, @RequestParam("authorId")Integer authorId){
+    public String associateBookAndAuthor(@RequestParam("bookId")Integer bookId,
+                                         @RequestParam("authorId")Integer authorId){
         try{
             String result = bookService.associateBookAndAuthor(bookId,authorId);
             return result;
         } catch (Exception e){
             return e.getMessage();
         }
+
     }
 
     @GetMapping("/getBookByAuthor")

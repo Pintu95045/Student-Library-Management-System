@@ -13,19 +13,19 @@ public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Integer bookId;
+    private Integer bookId;
 
     @Column(unique = true)
     private String title;
 
-    private int noOfPages;
+    private Integer noOfPages;
 
     @Enumerated(value = EnumType.STRING)
     private Genre genre;
 
     private Integer price;
 
-    private boolean isIssued;
+    private Boolean isIssued;
 
     @JoinColumn
     @ManyToOne

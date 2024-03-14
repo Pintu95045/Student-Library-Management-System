@@ -15,29 +15,33 @@ public class CardService {
 
     @Autowired
     private CardRepository cardRepository;
+
     @Autowired
     private StudentRepository studentRepository;
+
     public String generateCard(){
 
-        //i want to save some card to DB
-        LibraryCard card= new LibraryCard();
+        //I want to save some Cards to the DB
+        LibraryCard card = new LibraryCard(); //This object will go the DB and save it
         card.setCardStatus(CardStatus.NEW);
         card.setNoOfBooksIssued(0);
-
-        Date exiparyDate = new Date(2028,6,1);
-        card.setValidity(exiparyDate);
-        card=cardRepository.save(card);
-
-        return "The card has been generated with cardID "+card.getCardNo();
+        Date expiryDate = new Date(128,6,1);
+        card.setValidity(expiryDate);
+        card = cardRepository.save(card);
+        return "The card has been generated with cardId "+card.getCardNo();
 
     }
 
     public String associateCardAndStudent(Integer cardId,Integer studentId){
-        LibraryCard libraryCard=cardRepository.findById(cardId).get();
-        Student student=studentRepository.findById(studentId).get();
+
+        LibraryCard libraryCard = cardRepository.findById(cardId).get();
+        Student student = studentRepository.findById(studentId).get();
         libraryCard.setCardStatus(CardStatus.ISSUED);
-        libraryCard.setStudent(student); // setting the FK lc table
+        libraryCard.setStudent(student); //Indirectly setting the FK in LC table
+        //but bcz we are playing with entities so we will have to set as per the entity
         cardRepository.save(libraryCard);
-        return "The card and the student has been associated";
+        return "The card and student has been associated";
     }
+
+
 }

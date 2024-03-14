@@ -10,20 +10,27 @@ import AccioJob.Student.Library.Management.System.Repositories.TransactionReposi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class TransactionService {
 
     @Autowired
     private BookRepository bookRepository;
+
     @Autowired
     private CardRepository cardRepository;
+
     @Autowired
     private TransactionRepository transactionRepository;
 
     public static final Integer MAX_NO_OF_ISSUED_BOOKS = 3;
+
+    public static final Integer FINE_PER_DAY = 5;
 
 
     public String issueBook(Integer bookId,Integer cardId) throws Exception {
@@ -54,7 +61,7 @@ public class TransactionService {
 
 
         //3. book should not be already issued
-        if(book.isIssued()) {
+        if(book.getIsIssued()) {
             transaction.setTransactionStatus(TransactionStatus.FAILURE);
             transactionRepository.save(transaction);
             return "Book is already issued to cardId"+ card.getCardNo();
@@ -69,17 +76,19 @@ public class TransactionService {
 
         //5. Check for if the card has expired its validity
 
-        LocalDate currentDate=LocalDate.now();
-        if(currentDate.isAfter(card.getValidity())){
+        Long timeInMsOfCardValidity = card.getValidity().getTime();
+        Long currentTimeInMs = System.currentTimeMillis();
+
+        if(currentTimeInMs>timeInMsOfCardValidity){
             transaction.setTransactionStatus(TransactionStatus.FAILURE);
             transactionRepository.save(transaction);
             return "The card has been expired";
         }
 
         //Happy flow
-        transaction.setTransactionStatus(TransactionStatus.ISISUED);
+        transaction.setTransactionStatus(TransactionStatus.ISSUED);
 
-        book.setIssued(true);
+        book.setIsIssued(true);
         card.setNoOfBooksIssued(card.getNoOfBooksIssued()+1);
 
         //Rule is whatever has been modified : should be saved ??
@@ -90,4 +99,39 @@ public class TransactionService {
         return "The transaction has been completed with transactionId "+transaction.getTransactionId();
 
     }
+
+    public String returnBook(Integer bookId,Integer cardId){
+
+        //I need to find out the Transaction : with that bookId, cardId and ISSUED status
+
+        Book book = bookRepository.findById(bookId).get();
+        LibraryCard card = cardRepository.findById(cardId).get();
+
+        Transaction transaction = transactionRepository.findTransactionByBookAndCardAndTransactionStatus(book,card,TransactionStatus.ISSUED);
+        //Fine amount to be calculated :
+        Long timeDiffernceInMs = System.currentTimeMillis() - transaction.getIssueDate().getTime();
+
+        //This time is in MS, we need to convert this to days
+        Long days = TimeUnit.DAYS.convert(timeDiffernceInMs,TimeUnit.MILLISECONDS);
+
+        Integer fineAmt = 0;
+
+        if(days>15)
+            fineAmt = Math.toIntExact((days-15)*FINE_PER_DAY);
+
+        //Save the transaction
+        transaction.setFineAmount(fineAmt);
+        transaction.setTransactionStatus(TransactionStatus.COMPLETED);
+        transaction.setReturnDate(new Date()); //Automatically set the current Date in the system
+        book.setIsIssued(Boolean.FALSE);
+        card.setNoOfBooksIssued(card.getNoOfBooksIssued()-1);
+
+        transactionRepository.save(transaction);
+        cardRepository.save(card);
+        bookRepository.save(book);
+
+        return "The book has been successfully returned";
+
+    }
+
 }

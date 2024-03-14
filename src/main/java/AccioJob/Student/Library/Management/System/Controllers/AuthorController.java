@@ -7,19 +7,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
-@RequestMapping("/author")
-
+@RequestMapping("author")
 public class AuthorController {
 
     @Autowired
     private AuthorService authorService;
 
-    @PostMapping("/add")
+    @PostMapping("add")
     public String addAuthor(@RequestBody Author author){
-        String result= authorService.addAuthor(author);
+
+        String result = authorService.addAuthor(author);
         return result;
     }
+
+    @GetMapping("/getAuthorWithMaxBooks")
+    public Author getAuthor(){
+
+        Author ansAuthor = authorService.getAuthorWithMaxBooks();
+        return ansAuthor;
+    }
+
 
 }

@@ -3,7 +3,7 @@ package AccioJob.Student.Library.Management.System.Services;
 import AccioJob.Student.Library.Management.System.Entity.Author;
 import AccioJob.Student.Library.Management.System.Entity.Book;
 import AccioJob.Student.Library.Management.System.Exceptions.InvalidPageCountException;
-import AccioJob.Student.Library.Management.System.Repositories.AuthorRespository;
+import AccioJob.Student.Library.Management.System.Repositories.AuthorRepository;
 import AccioJob.Student.Library.Management.System.Repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,43 +15,54 @@ import java.util.Optional;
 @Service
 public class BookService {
 
+
     @Autowired
     private BookRepository bookRepository;
 
     @Autowired
-    private AuthorRespository authorRespository;
+    private AuthorRepository authorRepository;
 
-    public String addBook(Book book) throws Exception{
-        if(book.getNoOfPages()<=0){
-            throw new InvalidPageCountException("page count entered is incorrect");
+    public String addBook(Book book) throws Exception {
+
+        if (book.getNoOfPages() <= 0) {
+            throw new InvalidPageCountException("Page Count entered is incorrect");
         }
+        book.setIsIssued(Boolean.FALSE);
         bookRepository.save(book);
         return "Book has been saved to the DB";
     }
-    public String associateBookAndAuthor(Integer bookId,Integer authorId) throws Exception{
+
+    public String associateBookAndAuthor(Integer bookId, Integer authorId) throws Exception {
 
         //Get the book from the bookId
         Optional<Book> bookOptional = bookRepository.findById(bookId);
 
-        if(bookOptional.isEmpty()) {
+        if (bookOptional.isEmpty()) {
             throw new Exception("BookId Entered is incorrect");
             //Throw an exception that book is not found
         }
+
         Book book = bookOptional.get();
 
-        Optional<Author> optionalAuthor = authorRespository.findById(authorId);
-        if(optionalAuthor.isEmpty()) {
+//        Book book = bookRepository.findById(bookId).get();
+
+        Optional<Author> optionalAuthor = authorRepository.findById(authorId);
+        if (optionalAuthor.isEmpty()) {
             //thow an exception saying AuthorId entered is incorrect
             throw new Exception("AuthorId entered is incorrect");
         }
+
         Author author = optionalAuthor.get();
+
+
+//        Author author = authorRepository.findById(authorId).get();
 
         //associate book and author Entity
         book.setAuthor(author);
-        author.setNoOfBooks(author.getNoOfBooks()+1);
+        author.setNoOfBooks(author.getNoOfBooks() + 1);
 
         bookRepository.save(book);
-        authorRespository.save(author);
+        authorRepository.save(author);
         return "Book and Author have been associated";
     }
 
@@ -62,11 +73,12 @@ public class BookService {
         //Book.getAuthor.getId is matching
         List<Book> ansList = new ArrayList<>();
 
-        for(Book book:allBooks) {
-            if(book.getAuthor().getAuthorId().equals(authorId)){
+        for (Book book : allBooks) {
+            if (book.getAuthor().getAuthorId().equals(authorId)) {
                 ansList.add(book);
             }
         }
         return ansList;
     }
 }
+
